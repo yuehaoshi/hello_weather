@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MapPage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">edu.uiuc.cs427app</a> &gt; <span class="el_source">MapPage.java</span></div><h1>MapPage.java</h1><pre class="source lang-java linenums">package edu.uiuc.cs427app;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+
+<span class="nc" id="L16">public class MapPage extends AppCompatActivity implements OnMapReadyCallback {</span>
+
+    String locationLatitude;
+    String locationLongitude;
+    static String locationName;
+
+    /**
+     * This function gets the user's chosen city, latitude, longitude from the MainActivity for setting the map
+     * A TextView displays the aforementioned values
+     * The database is hosted on Firebase Realtime Database.
+     * @param savedInstanceState default input parameter for onCreate method
+     * @return No return needed for onCreate method
+     */
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L33">        super.onCreate(savedInstanceState);</span>
+
+<span class="nc" id="L35">        locationName = getIntent().getStringExtra(&quot;city&quot;);</span>
+<span class="nc" id="L36">        locationLatitude = getIntent().getStringExtra(&quot;latitude&quot;);</span>
+<span class="nc" id="L37">        locationLongitude = getIntent().getStringExtra(&quot;longitude&quot;);</span>
+        // Set the layout file as the content view.
+<span class="nc" id="L39">        setContentView(R.layout.activity_map);</span>
+
+        // Setting database object and recyclerView.
+        // RecyclerView is similar to a dynamic list that can update itself, so it is a good way to implement our location list
+<span class="nc" id="L43">        FirebaseAuth fAuth = FirebaseAuth.getInstance();</span>
+<span class="nc" id="L44">        fAuth.getCurrentUser().reload();</span>
+
+        // Setting the app name to &quot;Team #1-username&quot;
+<span class="nc" id="L47">        String app_name = getString(R.string.app_name);</span>
+<span class="nc" id="L48">        this.setTitle(app_name + &quot;-&quot; + fAuth.getCurrentUser().getDisplayName() );</span>
+
+<span class="nc" id="L50">        TextView textView = (TextView) findViewById(R.id.city_name_lat_lon);</span>
+<span class="nc" id="L51">        textView.setText(&quot;  &quot; + locationName + &quot;(&quot; + locationLatitude + &quot;°N&quot; + &quot;,&quot; + locationLongitude +&quot;°E&quot; +  &quot;)&quot;); //set text for text view</span>
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+<span class="nc" id="L53">        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()</span>
+<span class="nc" id="L54">                .findFragmentById(R.id.map);</span>
+<span class="nc" id="L55">        mapFragment.getMapAsync(this);</span>
+<span class="nc" id="L56">    }</span>
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * After map is ready to be used, we add a marker to the city that the user has chosen.
+     * The documentation can be viewed in https://developers.google.com/maps/documentation/android-sdk/map
+     * @param googleMap object is the entry point for managing the underlying map features and data.
+     * @return No return needed for onCreate method.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        // TODO: get latitude/longitude of the city,
+<span class="nc" id="L69">        double loc_lat = Double.parseDouble(locationLatitude);</span>
+<span class="nc" id="L70">        double loc_long = Double.parseDouble(locationLongitude);</span>
+<span class="nc" id="L71">        LatLng city = new LatLng(loc_lat, loc_long);</span>
+<span class="nc" id="L72">        googleMap.addMarker(new MarkerOptions()</span>
+<span class="nc" id="L73">                .position(city)</span>
+<span class="nc" id="L74">                .title(locationName));</span>
+<span class="nc" id="L75">        googleMap.moveCamera(CameraUpdateFactory.newLatLng(city));</span>
+<span class="nc" id="L76">        googleMap.getUiSettings().setZoomControlsEnabled(true);</span>
+<span class="nc" id="L77">        googleMap.getUiSettings().setRotateGesturesEnabled(false);</span>
+<span class="nc" id="L78">        googleMap.getUiSettings().setScrollGesturesEnabled(false);</span>
+<span class="nc" id="L79">        googleMap.getUiSettings().setTiltGesturesEnabled(false);</span>
+<span class="nc" id="L80">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

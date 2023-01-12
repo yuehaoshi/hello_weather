@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "218289565621",
+    "project_id": "weatherapp-75d7a",
+    "storage_bucket": "weatherapp-75d7a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218289565621:android:f5b5fd09623a5c4b8033fc",
+        "android_client_info": {
+          "package_name": "com.example.weatherapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "218289565621-6q2erjthab02g14dvjvgh93fijsoe68f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5pC3WItwVC580N6rjn7osGIMijMjrIzI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "218289565621-6q2erjthab02g14dvjvgh93fijsoe68f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218289565621:android:5cd2ac0b254c03378033fc",
+        "android_client_info": {
+          "package_name": "edu.uiuc.cs427app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "218289565621-6q2erjthab02g14dvjvgh93fijsoe68f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5pC3WItwVC580N6rjn7osGIMijMjrIzI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "218289565621-6q2erjthab02g14dvjvgh93fijsoe68f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

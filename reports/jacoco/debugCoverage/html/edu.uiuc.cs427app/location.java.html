@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>location.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">edu.uiuc.cs427app</a> &gt; <span class="el_source">location.java</span></div><h1>location.java</h1><pre class="source lang-java linenums">package edu.uiuc.cs427app;
+
+public class location
+{
+    // Variable to store data corresponding to locationName keyword in database
+    private String locationName;
+    private Double locationLatitude;
+    private Double locationLongitude;
+
+    /**
+     *  Mandatory empty constructor for use of FirebaseUI
+     */
+<span class="nc" id="L13">    public location() {}</span>
+    /**
+     *  Getter and setter methods for Location (City) name
+     */
+    public String getLocationName()
+    {
+<span class="nc" id="L19">        return locationName;</span>
+    }
+    public void setLocationName(String locationName)
+    {
+<span class="nc" id="L23">        this.locationName = locationName;</span>
+<span class="nc" id="L24">    }</span>
+
+    /**
+     *  Getter and setter methods for latitude of city
+     */
+
+    // Getter and setter methods for latitude
+    public Double getLocationLatitude() {
+<span class="nc" id="L32">        return locationLatitude;</span>
+    }
+<span class="nc" id="L34">    public void setLocationLatitude(Double locationLatitude) {this.locationLatitude = locationLatitude;}</span>
+
+    /**
+     *  Getter and setter methods for longitude of city
+     */
+
+    // Getter and setter methods for longitude
+    public Double getLocationLongitude() {
+<span class="nc" id="L42">        return locationLongitude;</span>
+    }
+<span class="nc" id="L44">    public void setLocationLongitude(Double locationLongitude) {this.locationLongitude = locationLongitude;}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

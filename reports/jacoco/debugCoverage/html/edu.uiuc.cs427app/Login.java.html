@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Login.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">edu.uiuc.cs427app</a> &gt; <span class="el_source">Login.java</span></div><h1>Login.java</h1><pre class="source lang-java linenums">package edu.uiuc.cs427app;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.util.Patterns;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+
+import edu.uiuc.cs427app.MainActivity;
+import edu.uiuc.cs427app.R;
+import edu.uiuc.cs427app.Register;
+
+<span class="nc" id="L30">public class Login extends AppCompatActivity {</span>
+
+    // Initialization
+
+    EditText lemail,lpass;
+    Button loginBtn;
+    TextView mRegisterBtn;
+    FirebaseAuth fAuth;
+    ProgressBar progressBar;
+
+
+    /**
+     * This function takes email and password of the user as input to login to the app by .
+     * The user is given an option to register if they are not members already
+     * The authentication is hosted by Firebase Authentication
+     * Documentation can be found @ https://firebase.google.com/docs/auth/android/start
+     * @param savedInstanceState default input parameter for onCreate method
+     * No return needed for onCreate method
+     */
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+<span class="nc" id="L53">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L54">        setContentView(R.layout.activity_login);</span>
+<span class="nc" id="L55">        Log.d(&quot;myTag&quot;, &quot;In Login.java&quot;);</span>
+
+        // Extracting information from UI elements. Refer activity_login.xml
+
+<span class="nc" id="L59">        lemail=findViewById(R.id.emaila);</span>
+<span class="nc" id="L60">        lpass=findViewById(R.id.passworda);</span>
+<span class="nc" id="L61">        progressBar=findViewById(R.id.progressBar2);</span>
+<span class="nc" id="L62">        fAuth=FirebaseAuth.getInstance();</span>
+<span class="nc" id="L63">        loginBtn=findViewById(R.id.login);</span>
+<span class="nc" id="L64">        mRegisterBtn=findViewById(R.id.to_signup);</span>
+
+<span class="nc" id="L66">        loginBtn.setOnClickListener(new View.OnClickListener() {</span>
+            /**
+             * This method handles the click event for authenticating user
+             * Source: https://developer.android.com/develop/ui/views/components/button
+             * @param view: This is the view that is being clicked
+             * @return: No return needed for void method
+             */
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L75">                String memail= lemail.getText().toString().trim();</span>
+<span class="nc" id="L76">                String password=lpass.getText().toString().trim();</span>
+
+                // Validating the user information
+
+                // Check whether the Email entered is of the form email@site.com
+
+<span class="nc bnc" id="L82" title="All 4 branches missed.">                if (!TextUtils.isEmpty(memail) &amp;&amp; Patterns.EMAIL_ADDRESS.matcher(memail).matches()) {</span>
+<span class="nc" id="L83">                    System.console();</span>
+                }
+                else{
+<span class="nc" id="L86">                    lemail.setError(&quot;Please enter valid Email ID&quot;);</span>
+<span class="nc" id="L87">                    return;</span>
+                }
+
+                // Check whether the user has entered an Email
+
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                if(TextUtils.isEmpty(memail)){</span>
+<span class="nc" id="L93">                    lemail.setError(&quot;Please enter Email ID&quot;);</span>
+<span class="nc" id="L94">                    return;</span>
+                }
+
+                // Check whether the user has entered a password
+
+<span class="nc bnc" id="L99" title="All 2 branches missed.">                if(TextUtils.isEmpty(password)){</span>
+<span class="nc" id="L100">                    lpass.setError(&quot;Password is required&quot;);</span>
+<span class="nc" id="L101">                    return;</span>
+                }
+
+                // Check whether the user has entered a valid password
+
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                if(password.length()&lt;6){</span>
+<span class="nc" id="L107">                    lpass.setError(&quot;Password must be greater than 6 characters&quot;);</span>
+<span class="nc" id="L108">                    return;</span>
+                }
+
+<span class="nc" id="L111">                progressBar.setVisibility(View.VISIBLE);</span>
+
+                // Authenticate the user
+
+<span class="nc" id="L115">                fAuth.signInWithEmailAndPassword(memail,password).addOnCompleteListener(new OnCompleteListener&lt;AuthResult&gt;() {</span>
+                    /**
+                     * Listener called when login Task completes.
+                     * Source: https://developer.android.com/reference/com/google/android/play/core/tasks/OnCompleteListener
+                     * @param task	Task: the completed Task. Never null
+                     * @return: No return needed for void method
+                     */
+                    @Override
+                    public void onComplete(@NonNull Task&lt;AuthResult&gt; task) {
+<span class="nc bnc" id="L124" title="All 2 branches missed.">                        if(task.isSuccessful()){</span>
+<span class="nc" id="L125">                            Toast.makeText(edu.uiuc.cs427app.Login.this, &quot;Welcome back!&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L126">                            startActivity(new Intent(getApplicationContext(), MainActivity.class));</span>
+
+<span class="nc" id="L128">                            finish();</span>
+                        }else{
+<span class="nc" id="L130">                            Toast.makeText(edu.uiuc.cs427app.Login.this, &quot;Error is occurred: &quot; +task.getException().getMessage(), Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L131">                            progressBar.setVisibility(View.GONE);</span>
+
+                        }
+<span class="nc" id="L134">                    }</span>
+                });
+
+
+<span class="nc" id="L138">            }</span>
+        });
+
+        // Add a register button in case the user does not have an account
+        /**
+         * This method handles the click event for directing user to Register page if the user doesn't have an account
+         * Source: https://developer.android.com/develop/ui/views/components/button
+         * @param view: This is the view that is being clicked
+         * @return: No return needed for void method
+         */
+
+<span class="nc" id="L149">        mRegisterBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L152">                startActivity(new Intent(Login.this, Register.class));</span>
+<span class="nc" id="L153">                finish();</span>
+<span class="nc" id="L154">            }</span>
+        });
+
+
+
+<span class="nc" id="L159">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WeatherPage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">edu.uiuc.cs427app</a> &gt; <span class="el_source">WeatherPage.java</span></div><h1>WeatherPage.java</h1><pre class="source lang-java linenums">package edu.uiuc.cs427app;
+
+import android.annotation.SuppressLint;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+<span class="nc" id="L23">public class WeatherPage extends AppCompatActivity {</span>
+    private TextView currentTemp;
+    private TextView weatherDesc;
+    private TextView humidity;
+    private TextView windCondition;
+    String locationLatitude;
+    String locationLongitude;
+    static String locationName;
+
+    /**
+     * This function calls API and sets the TextViews when the page is generated
+     * @param savedInstanceState default input parameter for onCreate method
+     * @return No return needed for onCreate method
+     */
+    @SuppressLint(&quot;SetTextI18n&quot;)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L40">        super.onCreate(savedInstanceState);</span>
+
+        // Get city name, latitude, longitude information passed from &quot;DetailsActivity&quot; page
+<span class="nc" id="L43">        locationName = getIntent().getStringExtra(&quot;city&quot;);</span>
+<span class="nc" id="L44">        locationLatitude = getIntent().getStringExtra(&quot;latitude&quot;);</span>
+<span class="nc" id="L45">        locationLongitude = getIntent().getStringExtra(&quot;longitude&quot;);</span>
+
+        // Connect to UI page
+<span class="nc" id="L48">        setContentView(R.layout.activity_weather);</span>
+<span class="nc" id="L49">        String city = locationName;</span>
+
+        // Setting database object and recyclerView.
+        // RecyclerView is similar to a dynamic list that can update itself, so it is a good way to implement our location list
+<span class="nc" id="L53">        FirebaseAuth fAuth = FirebaseAuth.getInstance();</span>
+<span class="nc" id="L54">        fAuth.getCurrentUser().reload();</span>
+
+        // Setting the app name to &quot;Team #1-username&quot;
+<span class="nc" id="L57">        String app_name = getString(R.string.app_name);</span>
+<span class="nc" id="L58">        this.setTitle(app_name + &quot;-&quot; + fAuth.getCurrentUser().getDisplayName());</span>
+
+
+        // Connect to TextViews in UI page
+        // TextViews on UI page
+<span class="nc" id="L63">        TextView cityName = findViewById(R.id.cityName);</span>
+<span class="nc" id="L64">        TextView date = findViewById(R.id.date);</span>
+<span class="nc" id="L65">        currentTemp = findViewById(R.id.currentTemp);</span>
+<span class="nc" id="L66">        weatherDesc = findViewById(R.id.weatherDesc);</span>
+<span class="nc" id="L67">        humidity = findViewById(R.id.humidity);</span>
+<span class="nc" id="L68">        windCondition = findViewById(R.id.windCondition);</span>
+
+        // Display city name and current data information
+<span class="nc" id="L71">        cityName.setText(&quot;City: &quot; + city);</span>
+
+        // Add current system date and time into textView since weather API does not return time information
+<span class="nc" id="L74">        Date c = Calendar.getInstance().getTime();</span>
+<span class="nc" id="L75">        SimpleDateFormat df = new SimpleDateFormat(&quot;dd/MMM/yyyy HH:mm&quot;, Locale.getDefault());</span>
+<span class="nc" id="L76">        String formattedDate = df.format(c);</span>
+<span class="nc" id="L77">        date.setText(&quot;Time: &quot; + formattedDate);</span>
+
+        // Call API and set other TextViews
+<span class="nc" id="L80">        new JSONWeatherTask().execute();</span>
+<span class="nc" id="L81">    }</span>
+
+
+    /**
+     * Query by OpenWeather API and update TextView
+     * This is an Asynchronous method, doInBackground will call API and generate output JSON String,
+     * onPostExecute will then parse the JSON information and set corresponding TextViews
+     * The logic of AsyncTask can be found in this post: https://stackoverflow.com/questions/9671546/asynctask-android-example
+     *
+     * No param and return needed for this AsyncTask function, all changes are done during execution
+     */
+    @SuppressLint(&quot;StaticFieldLeak&quot;)
+<span class="nc" id="L93">    private class JSONWeatherTask extends AsyncTask&lt;String, Void, String&gt; {</span>
+        protected String doInBackground(String[] args) {
+            // Generate API call URL
+<span class="nc" id="L96">            String url = &quot;https://api.openweathermap.org/data/2.5/weather?lat=&quot; + locationLatitude + &quot;&amp;lon=&quot; + locationLongitude + &quot;&amp;exclude=hourly,daily&amp;appid=e1dca6030c2a3a4bc4d94f398c03cb10&quot;;</span>
+            // Call API and store output into &quot;result&quot;
+<span class="nc" id="L98">            return weatherHTTPClient.getWeatherData(url);</span>
+        }
+        protected void onPostExecute(String result) {
+            try {
+<span class="nc" id="L102">                String temp = &quot;&quot;;</span>
+<span class="nc" id="L103">                String desc = &quot;&quot;;</span>
+<span class="nc" id="L104">                String hum = &quot;&quot;;</span>
+<span class="nc" id="L105">                String windSpeed = &quot;&quot;;</span>
+                // Parse JSON file generated from API call
+                // Details of parsing JSON file in Java can be found here: https://processing.org/reference/JSONObject_getJSONArray_.html
+<span class="nc" id="L108">                JSONObject obj = new JSONObject(result);</span>
+<span class="nc" id="L109">                JSONObject main = obj.getJSONObject(&quot;main&quot;);</span>
+<span class="nc" id="L110">                JSONObject weatherDetail = obj.getJSONArray(&quot;weather&quot;).getJSONObject(0);</span>
+<span class="nc" id="L111">                JSONObject windDesc = obj.getJSONObject(&quot;wind&quot;);</span>
+
+                // Locate information from parsed file and generate output string for each TextView
+<span class="nc" id="L114">                temp = &quot;Temperature: &quot; + main.getString(&quot;temp&quot;) + &quot;K&quot;;</span>
+<span class="nc" id="L115">                desc = &quot;Weather: &quot; + weatherDetail.getString(&quot;description&quot;);</span>
+<span class="nc" id="L116">                hum = &quot;Humidity: &quot; + main.getInt(&quot;humidity&quot;) + &quot;%&quot;;</span>
+<span class="nc" id="L117">                windSpeed = &quot;Wind Speed: &quot; + windDesc.getDouble(&quot;speed&quot;) + &quot;m/s&quot;;</span>
+                // Update Content for each TextView
+<span class="nc" id="L119">                currentTemp.setText(temp);</span>
+<span class="nc" id="L120">                weatherDesc.setText(desc);</span>
+<span class="nc" id="L121">                humidity.setText(hum);</span>
+<span class="nc" id="L122">                windCondition.setText(windSpeed);</span>
+<span class="nc" id="L123">            } catch (JSONException e) {</span>
+<span class="nc" id="L124">                e.printStackTrace();</span>
+<span class="nc" id="L125">            }</span>
+<span class="nc" id="L126">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Team #1</string>
+    <string name="city">City:</string>
+    <string name="time">Time:</string>
+    <string name="temperature">Temperature:</string>
+    <string name="weather">Weather:</string>
+    <string name="humidity">Humidity:</string>
+    <string name="wind_speed">Wind Speed:</string>
+</resources>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DetailsActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">edu.uiuc.cs427app</a> &gt; <span class="el_source">DetailsActivity.java</span></div><h1>DetailsActivity.java</h1><pre class="source lang-java linenums">package edu.uiuc.cs427app;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+<span class="nc" id="L19">public class DetailsActivity extends AppCompatActivity implements View.OnClickListener{</span>
+
+    String locationLatitude;
+    String locationLongitude;
+    static String locationName;
+
+    /**
+     * This function provides the options available to the user for the chosen city, that is Map and Weather
+     * @param savedInstanceState default input parameter for onCreate method
+     * @return No return needed for onCreate method
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L32">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L33">        setContentView(R.layout.activity_details);</span>
+
+        // Setting database object and recyclerView.
+        // RecyclerView is similar to a dynamic list that can update itself, so it is a good way to implement our location list
+<span class="nc" id="L37">        FirebaseAuth fAuth = FirebaseAuth.getInstance();</span>
+<span class="nc" id="L38">        fAuth.getCurrentUser().reload();</span>
+
+        // Setting the app name to &quot;Team #1-username&quot;
+<span class="nc" id="L41">        String app_name = getString(R.string.app_name);</span>
+<span class="nc" id="L42">        this.setTitle(app_name + &quot;-&quot; + fAuth.getCurrentUser().getDisplayName());</span>
+
+
+        // Process the Intent payload that has opened this Activity and show the information accordingly
+<span class="nc" id="L46">        String cityName = getIntent().getStringExtra(&quot;city&quot;).toString();</span>
+<span class="nc" id="L47">        String welcome = &quot;Welcome to &quot; + cityName + &quot;!&quot;;</span>
+<span class="nc" id="L48">        String cityWeatherInfo = &quot;Find detailed information about &quot; + cityName + &quot; below.&quot;;</span>
+<span class="nc" id="L49">        locationName = cityName;</span>
+
+        // Initializing the GUI elements
+<span class="nc" id="L52">        TextView welcomeMessage = findViewById(R.id.welcomeText);</span>
+<span class="nc" id="L53">        TextView cityInfoMessage = findViewById(R.id.cityInfo);</span>
+
+<span class="nc" id="L55">        welcomeMessage.setText(welcome);</span>
+<span class="nc" id="L56">        cityInfoMessage.setText(cityWeatherInfo);</span>
+
+        // A map button which on click shows the map of the city.
+<span class="nc" id="L59">        Button buttonMap = findViewById(R.id.mapButton);</span>
+<span class="nc" id="L60">        buttonMap.setOnClickListener(this);</span>
+
+        // A weather button which on click shows the weather details of current city
+<span class="nc" id="L63">        Button buttonWeather = findViewById(R.id.weatherButton);</span>
+<span class="nc" id="L64">        buttonWeather.setOnClickListener(this);</span>
+
+        // Get location latitude and longitude information from Firebase and store in global variable
+<span class="nc" id="L67">        readData(new MyCallback() {</span>
+            /**
+             * This function sets the latitude to a global variable
+             * @param value latitude of String Type
+             * @return No return needed for onCreate method
+             */
+            @Override
+<span class="nc" id="L74">            public void onLatCallback(String value) { locationLatitude = value;}</span>
+            /**
+             * This function sets the longitude to a global variable
+             * @param value longitude of String Type
+             * @return No return needed for onCreate method
+             */
+            @Override
+<span class="nc" id="L81">            public void onLngCallback(String value) {locationLongitude = value;}</span>
+        });
+<span class="nc" id="L83">    }</span>
+
+    /**
+     * This method handles the click events for viewing the Map and viewing the Weather information
+     * Source: https://developer.android.com/develop/ui/views/components/button
+     * @param view: This is the view that is being clicked
+     * @return: No return needed for void method
+     */
+
+    @Override
+    public void onClick(View view) {
+        Intent intent;
+        Intent map_intent;
+<span class="nc bnc" id="L96" title="All 3 branches missed.">        switch (view.getId()) {</span>
+            case R.id.mapButton:
+                //Implement this (create an Intent that goes to a new Activity, which shows the map)
+<span class="nc" id="L99">                String city = getIntent().getStringExtra(&quot;city&quot;);</span>
+<span class="nc" id="L100">                map_intent = new Intent(getApplicationContext(), MapPage.class);</span>
+                // Pass cityName, latitude, longitude to weather page for API query
+<span class="nc" id="L102">                map_intent.putExtra(&quot;city&quot;, locationName);</span>
+<span class="nc" id="L103">                map_intent.putExtra(&quot;latitude&quot;, locationLatitude);</span>
+<span class="nc" id="L104">                map_intent.putExtra(&quot;longitude&quot;, locationLongitude);</span>
+<span class="nc" id="L105">                startActivity(map_intent);</span>
+<span class="nc" id="L106">                break;</span>
+            case R.id.weatherButton:
+                // Redirect to weather details page
+<span class="nc" id="L109">                String locationName = getIntent().getStringExtra(&quot;city&quot;);</span>
+<span class="nc" id="L110">                intent = new Intent(this, WeatherPage.class);</span>
+
+                // Pass cityName, latitude, longitude to weather page for API query
+<span class="nc" id="L113">                intent.putExtra(&quot;city&quot;, locationName);</span>
+<span class="nc" id="L114">                intent.putExtra(&quot;latitude&quot;, locationLatitude);</span>
+<span class="nc" id="L115">                intent.putExtra(&quot;longitude&quot;, locationLongitude);</span>
+<span class="nc" id="L116">                startActivity(intent);</span>
+                break;
+        }
+<span class="nc" id="L119">    }</span>
+
+    /**
+     * &quot;MyCallback&quot; interface and &quot;readData&quot; class are implemented to retrieve latitude and longitude data from Firebase
+     * No params and return needed for interface
+     */
+    public interface MyCallback {
+        void onLatCallback(String value);
+        void onLngCallback(String value);
+    }
+
+    /**
+     * Method to get data from database
+     * &quot;MyCallback&quot; interface and &quot;readData&quot; class are implemented to retrieve latitude and longitude data from Firebase
+     * Firebase Realtime Database does not provide a simple &quot;get()&quot; method to read data;
+     * Instead, we need to set onDataChange() method to read a static snapshot of the content.
+     * Tutorial for Read Data from Firebase: https://firebase.google.com/docs/database/android/read-and-write
+     * Since reading data is an asynchronous process, we need to use a self-defined callback interface to store database data to global variable
+     * Reference to store database data as global variable: https://stackoverflow.com/questions/47847694/how-to-return-datasnapshot-value-as-a-result-of-a-method/47853774
+     *
+     * @param myCallback
+     * No return needed for void method
+     */
+    public static void readData(MyCallback myCallback) {
+        // Connect and get a reference of Firebase Realtime database
+<span class="nc" id="L144">        FirebaseAuth fAuth = FirebaseAuth.getInstance();</span>
+<span class="nc" id="L145">        final FirebaseDatabase database = FirebaseDatabase.getInstance();</span>
+<span class="nc" id="L146">        DatabaseReference ref = database.getReference();</span>
+<span class="nc" id="L147">        DatabaseReference curLat = ref.child(&quot;Users&quot;).child(fAuth.getCurrentUser().getUid()).child(&quot;locations&quot;).child(locationName + &quot;Info&quot;).child(&quot;locationLatitude&quot;);</span>
+<span class="nc" id="L148">        DatabaseReference curLng = ref.child(&quot;Users&quot;).child(fAuth.getCurrentUser().getUid()).child(&quot;locations&quot;).child(locationName + &quot;Info&quot;).child(&quot;locationLongitude&quot;);</span>
+
+        // Set Listeners for latitude data
+<span class="nc" id="L151">        curLat.addValueEventListener(new ValueEventListener() {</span>
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Get data in Double type, round to 2-decimal, and convert to String type
+<span class="nc" id="L155">                Double val = (Double) snapshot.getValue();</span>
+<span class="nc" id="L156">                Double roundedLat = (Math.round(val * 100.0) / 100.0);</span>
+<span class="nc" id="L157">                String latStr = roundedLat.toString();</span>
+<span class="nc" id="L158">                myCallback.onLatCallback(latStr);</span>
+<span class="nc" id="L159">            }</span>
+            @Override
+<span class="nc" id="L161">            public void onCancelled(@NonNull DatabaseError error) { }</span>
+        });
+
+        // Set Listeners for longitude data
+<span class="nc" id="L165">        curLng.addValueEventListener(new ValueEventListener() {</span>
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Get data in Double type, round to 2-decimal, and convert to String type
+<span class="nc" id="L169">                Double val = (Double) snapshot.getValue();</span>
+<span class="nc" id="L170">                Double roundedLng = (Math.round(val * 100.0) / 100.0);</span>
+<span class="nc" id="L171">                String lngStr = roundedLng.toString();</span>
+<span class="nc" id="L172">                myCallback.onLngCallback(lngStr);</span>
+<span class="nc" id="L173">            }</span>
+            @Override
+<span class="nc" id="L175">            public void onCancelled(@NonNull DatabaseError error) { }</span>
+        });
+<span class="nc" id="L177">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

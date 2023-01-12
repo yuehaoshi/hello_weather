@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>locationAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">edu.uiuc.cs427app</a> &gt; <span class="el_source">locationAdapter.java</span></div><h1>locationAdapter.java</h1><pre class="source lang-java linenums">package edu.uiuc.cs427app;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+
+/**
+ *  // RecycleView Adapter implementation is referred from this tutorial:
+ * // https://www.geeksforgeeks.org/how-to-populate-recyclerview-with-firebase-data-using-firebaseui-in-android-studio/
+ * // FirebaseRecyclerAdapter is a class provided by FirebaseUI.
+ * // it provides functions to bind, adapt and show database contents in a Recycler View
+ */
+
+public class locationAdapter extends FirebaseRecyclerAdapter&lt;
+        location, locationAdapter.locationsViewholder&gt; {
+
+
+    /**
+     *  Initialize the adapter
+     * @param options
+     * */
+    public locationAdapter(@NonNull FirebaseRecyclerOptions&lt;location&gt; options)
+    {
+<span class="nc" id="L35">        super(options);</span>
+<span class="nc" id="L36">    }</span>
+
+    /**
+     *  Called by RecyclerView to display the data at the specified position.
+     *  This method should update the contents of the itemView to reflect the item at the given position.
+     *  Source: https://developer.android.com/reference/androidx/recyclerview/widget/RecyclerView.Adapter#onCreateViewHolder(android.view.ViewGroup,int)
+     *  @param @NonNull VH holder: The ViewHolder which should be updated to represent the contents of the item at the given position in the data set.
+     * @param position: The position of the item within the adapter's data set.
+     * @param @NonNull List&lt;Object&gt; payloads
+     * A non-null list of merged payloads. Can be empty list if requires full update.
+     *  */
+
+    // Function to bind the view in Card view(&quot;location.xml&quot;) with data in model class(&quot;location.class&quot;)
+    @Override
+    protected void
+    onBindViewHolder(@NonNull locationsViewholder holder,
+                     int position, @NonNull location model)
+    {
+        // Add locationName from model class (&quot;location.class&quot;)to appropriate view in Card view (&quot;location.xml&quot;)
+<span class="nc" id="L55">        holder.locationName.setText(model.getLocationName());</span>
+<span class="nc" id="L56">    }</span>
+    /**
+     *  Called when RecyclerView needs a new ViewHolder of the given type to represent an item.
+     *  Source: https://developer.android.com/reference/androidx/recyclerview/widget/RecyclerView.Adapter#onCreateViewHolder(android.view.ViewGroup,int)
+     *  @param : @NonNull ViewGroup parent : The ViewGroup into which the new View will be added after it is bound to an adapter position.
+     *  @param : int viewType: The view type of the new View.
+     *  A non-null list of merged payloads. Can be empty list if requires full update.
+     *  */
+
+
+    // Function to tell the class about the Card view (&quot;location.xml&quot;)in which the data will be shown
+    @NonNull
+    @Override
+    public locationsViewholder
+    onCreateViewHolder(@NonNull ViewGroup parent,
+                       int viewType)
+    {
+<span class="nc" id="L73">        View view</span>
+<span class="nc" id="L74">                = LayoutInflater.from(parent.getContext())</span>
+<span class="nc" id="L75">                .inflate(R.layout.location, parent, false);</span>
+<span class="nc" id="L76">        return new locationsViewholder(view);</span>
+    }
+
+    // Sub Class to create references of the views in Card view (here &quot;location.xml&quot;)
+    static class locationsViewholder extends RecyclerView.ViewHolder {
+        TextView locationName;
+        public locationsViewholder(@NonNull View itemView)
+        {
+<span class="nc" id="L84">            super(itemView);</span>
+
+<span class="nc" id="L86">            locationName = itemView.findViewById(R.id.locationName);</span>
+
+            // Set a listener for &quot;SHOW DETAILS&quot; button in each RecycleView item
+<span class="nc" id="L89">            itemView.findViewById(R.id.buttonLocationDetail).setOnClickListener(new View.OnClickListener() {</span>
+                /**
+                 * This method handles the click events for show details for a location from the favourites list
+                 * Source: https://developer.android.com/develop/ui/views/components/button
+                 * @param view: This is the view that is being clicked
+                 * @return: No return needed for void method
+                 */
+                @Override
+                public void onClick(View view) {
+<span class="nc" id="L98">                    Intent intent = new Intent(itemView.getContext(), DetailsActivity.class);</span>
+<span class="nc" id="L99">                    intent.putExtra(&quot;city&quot;, locationName.getText());</span>
+<span class="nc" id="L100">                    itemView.getContext().startActivity(intent);</span>
+<span class="nc" id="L101">                }</span>
+            });
+
+            /**
+             * This method handles the click events for removing a location from the favourites list
+             * Source: https://developer.android.com/develop/ui/views/components/button
+             * @param view: This is the view that is being clicked
+             * @return: No return needed for void method
+             */
+
+<span class="nc" id="L111">            itemView.findViewById(R.id.buttonDeletion).setOnClickListener(new View.OnClickListener() {</span>
+                @Override
+                public void onClick(View view) {
+                    //pass deleted city name to the main activity
+<span class="nc" id="L115">                    Intent intent = new Intent(itemView.getContext(), MainActivity.class);</span>
+<span class="nc" id="L116">                    intent.putExtra(&quot;city&quot;, locationName.getText());</span>
+<span class="nc" id="L117">                    itemView.getContext().startActivity(intent);</span>
+
+<span class="nc" id="L119">                    FirebaseAuth fAuth = FirebaseAuth.getInstance();</span>
+<span class="nc" id="L120">                    final FirebaseDatabase database = FirebaseDatabase.getInstance();</span>
+<span class="nc" id="L121">                    DatabaseReference ref = database.getReference();</span>
+<span class="nc" id="L122">                    DatabaseReference userRef = ref.child(&quot;Users&quot;).child(fAuth.getCurrentUser().getUid()).child(&quot;locations&quot;).child(locationName.getText() + &quot;Info&quot;);</span>
+<span class="nc" id="L123">                    userRef.removeValue();</span>
+
+<span class="nc" id="L125">                }</span>
+            });
+<span class="nc" id="L127">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

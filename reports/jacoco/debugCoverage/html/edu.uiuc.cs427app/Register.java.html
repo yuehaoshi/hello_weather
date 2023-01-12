@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Register.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">edu.uiuc.cs427app</a> &gt; <span class="el_source">Register.java</span></div><h1>Register.java</h1><pre class="source lang-java linenums">package edu.uiuc.cs427app;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Patterns;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+<span class="nc" id="L28">public class Register extends AppCompatActivity {</span>
+
+    EditText name,email,pass,phone;
+
+<span class="nc" id="L32">    Boolean isDarkMode = false;</span>
+
+    Button register;
+    TextView mLoginBtn;
+    FirebaseAuth fAuth;
+    ProgressBar progressBar;
+
+    /**
+     * This function takes name, email, phone number, and password of the user as input to register the user in the database.
+     * The authentication is hosted by Firebase Authentication
+     * The user is given an option to login if they are members already
+     * Documentation can be viewed @ https://firebase.google.com/docs/auth/android/start
+     * The user also needs to choose the theme they would liken to set for UI
+     * Additionally the entered data is validated as well
+     * @param savedInstanceState default input parameter for onCreate method
+     * No return needed for onCreate method
+     */
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L52">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L53">        setContentView(R.layout.activity_register);</span>
+
+<span class="nc" id="L55">        name=findViewById(R.id.name);</span>
+<span class="nc" id="L56">        email=findViewById(R.id.email);</span>
+<span class="nc" id="L57">        pass=findViewById(R.id.password);</span>
+<span class="nc" id="L58">        phone=findViewById(R.id.phone);</span>
+<span class="nc" id="L59">        register=findViewById(R.id.register);</span>
+<span class="nc" id="L60">        Switch aSwitch = findViewById(R.id.switch_dark);</span>
+<span class="nc" id="L61">        mLoginBtn=findViewById(R.id.to_login);</span>
+
+<span class="nc" id="L63">        fAuth= FirebaseAuth.getInstance();</span>
+<span class="nc" id="L64">        progressBar=findViewById(R.id.progressBar);</span>
+
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if(fAuth.getCurrentUser()!=null){</span>
+<span class="nc" id="L67">            startActivity(new Intent(getApplicationContext(),MainActivity.class));</span>
+<span class="nc" id="L68">            finish();</span>
+        }
+
+<span class="nc" id="L71">        register.setOnClickListener(new View.OnClickListener() {</span>
+            /**
+             * This method handles the click event for logging a  user in
+             * Source: https://developer.android.com/develop/ui/views/components/button
+             * @param v: This is the view that is being clicked
+             * @return: No return needed for void method
+             */
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L80">                String displayedName = name.getText().toString().trim();</span>
+<span class="nc" id="L81">                String memail= email.getText().toString().trim();</span>
+<span class="nc" id="L82">                String password=pass.getText().toString().trim();</span>
+
+                // Validating the user information
+                // Check whether the Email entered is of the form email@site.com
+
+<span class="nc bnc" id="L87" title="All 4 branches missed.">                if (!TextUtils.isEmpty(memail) &amp;&amp; Patterns.EMAIL_ADDRESS.matcher(memail).matches()) {</span>
+<span class="nc" id="L88">                    System.console();</span>
+                }
+                else{
+<span class="nc" id="L91">                    email.setError(&quot;Please enter valid Email ID&quot;);</span>
+<span class="nc" id="L92">                    return;</span>
+                }
+
+                // Check whether the user has entered an Email
+
+<span class="nc bnc" id="L97" title="All 2 branches missed.">                if(TextUtils.isEmpty(memail)){</span>
+<span class="nc" id="L98">                    email.setError(&quot;Please enter Email ID&quot;);</span>
+<span class="nc" id="L99">                    return;</span>
+                }
+
+                // Check whether the user has entered a password
+
+<span class="nc bnc" id="L104" title="All 2 branches missed.">                if(TextUtils.isEmpty(password)){</span>
+<span class="nc" id="L105">                    pass.setError(&quot;Password is required&quot;);</span>
+<span class="nc" id="L106">                    return;</span>
+                }
+
+                // Check whether the user has entered a valid password
+
+<span class="nc bnc" id="L111" title="All 2 branches missed.">                if(password.length()&lt;6){</span>
+<span class="nc" id="L112">                    pass.setError(&quot;Password must be greater than 6 characters&quot;);</span>
+<span class="nc" id="L113">                    return;</span>
+                }
+
+<span class="nc" id="L116">                progressBar.setVisibility(View.VISIBLE);</span>
+
+                // Add User details to the firebase
+
+<span class="nc" id="L120">                fAuth.createUserWithEmailAndPassword(memail,password).addOnCompleteListener(new OnCompleteListener&lt;AuthResult&gt;() {</span>
+                    @Override
+                    /**
+                     * Listener called when create user Task completes.
+                     * Source: https://developer.android.com/reference/com/google/android/play/core/tasks/OnCompleteListener
+                     * @param task	Task: the completed Task. Never null
+                     * @return: No return needed for void method
+                     */
+                    public void onComplete(@NonNull Task&lt;AuthResult&gt; task) {
+<span class="nc bnc" id="L129" title="All 2 branches missed.">                        if(task.isSuccessful()){</span>
+                            // Updating user's selection of dark/light mode in firebase.
+<span class="nc" id="L131">                            final FirebaseDatabase database = FirebaseDatabase.getInstance();</span>
+<span class="nc" id="L132">                            DatabaseReference ref = database.getReference();</span>
+<span class="nc" id="L133">                            DatabaseReference userRef = ref.child(&quot;Users&quot;).child(fAuth.getCurrentUser().getUid()).child(&quot;darkMode&quot;);</span>
+<span class="nc" id="L134">                            userRef.setValue(isDarkMode);</span>
+
+                            // Updating user's displayed name in firebase so that it can be displayed on the app's main page.
+<span class="nc" id="L137">                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()</span>
+<span class="nc" id="L138">                                    .setDisplayName(displayedName)</span>
+<span class="nc" id="L139">                                    .build();</span>
+
+<span class="nc" id="L141">                            FirebaseAuth.getInstance().getCurrentUser().updateProfile(profileUpdates)</span>
+<span class="nc" id="L142">                                    .addOnCompleteListener(new OnCompleteListener&lt;Void&gt;() {</span>
+                                        /**
+                                         * Listener called when register Task completes finally.
+                                         * Source: https://developer.android.com/reference/com/google/android/play/core/tasks/OnCompleteListener
+                                         * @param task	Task: the completed Task. Never null
+                                         * @return: No return needed for void method
+                                         */
+                                        @Override
+                                        public void onComplete(@NonNull Task&lt;Void&gt; task) {
+<span class="nc bnc" id="L151" title="All 2 branches missed.">                                            if (task.isSuccessful()) {</span>
+<span class="nc" id="L152">                                                Toast.makeText(Register.this, &quot;User Created!&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L153">                                                startActivity(new Intent(getApplicationContext(),MainActivity.class));</span>
+                                            }
+<span class="nc" id="L155">                                        }</span>
+                                    });
+<span class="nc" id="L157">                        }else{</span>
+<span class="nc" id="L158">                            Toast.makeText(Register.this, &quot;Error is occurred : &quot; +task.getException().getMessage(), Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L159">                            progressBar.setVisibility(View.GONE);</span>
+
+                        }
+<span class="nc" id="L162">                    }</span>
+                });
+
+<span class="nc" id="L165">            }</span>
+        });
+
+        // Add a login button in case the user has an account
+
+<span class="nc" id="L170">        mLoginBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            /**
+             * This method handles the click event for directing user to Login page if the user has an account
+             * Source: https://developer.android.com/develop/ui/views/components/button
+             * @param view: This is the view that is being clicked
+             * @return: No return needed for void method
+             */
+            public void onClick(View view) {
+<span class="nc" id="L179">                startActivity(new Intent(getApplicationContext(),Login.class));</span>
+<span class="nc" id="L180">            }</span>
+        });
+
+<span class="nc" id="L183">        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {</span>
+            // It is used to change the light/dark mode through a switch
+
+            /**
+             * Called when the checked state of a compound button has changed.
+             * Source: https://developer.android.com/reference/android/widget/CompoundButton.OnCheckedChangeListener#onCheckedChanged(android.widget.CompoundButton,%20boolean)
+             * @param buttonView : CompoundButton: The compound button view whose state has changed.
+             * @param isChecked	boolean: The new checked state of buttonView.
+             * @return: No return needed for void method
+             */
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+<span class="nc bnc" id="L195" title="All 2 branches missed.">                if (isChecked) {</span>
+<span class="nc" id="L196">                    isDarkMode = true;</span>
+<span class="nc" id="L197">                    AppCompatDelegate.setDefaultNightMode(</span>
+                            AppCompatDelegate.MODE_NIGHT_YES);
+                } else {
+<span class="nc" id="L200">                    isDarkMode = false;</span>
+<span class="nc" id="L201">                    AppCompatDelegate.setDefaultNightMode(</span>
+                            AppCompatDelegate.MODE_NIGHT_NO);
+                }
+<span class="nc" id="L204">            }</span>
+        });
+<span class="nc" id="L206">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/weatherInfo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/cityName"
+            android:layout_width="260dp"
+            android:layout_height="150dp"
+            android:textSize="35sp"
+            android:textColor="@color/green"
+            android:fontFamily="serif"
+            android:text="City: " />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="260dp"
+            android:layout_height="50dp"
+            android:textSize="15sp"
+            android:text="Time: " />
+
+        <TextView
+            android:id="@+id/currentTemp"
+            android:layout_width="260dp"
+            android:layout_height="50dp"
+            android:textSize="15sp"
+            android:text="Temperature: " />
+
+        <TextView
+            android:id="@+id/weatherDesc"
+            android:layout_width="260dp"
+            android:layout_height="50dp"
+            android:textSize="15sp"
+            android:text="Weather: " />
+
+        <TextView
+            android:id="@+id/humidity"
+            android:layout_width="260dp"
+            android:layout_height="50dp"
+            android:textSize="15sp"
+            android:text="Humidity: " />
+
+        <TextView
+            android:id="@+id/windCondition"
+            android:layout_width="260dp"
+            android:layout_height="50dp"
+            android:textSize="15sp"
+            android:text="Wind Speed: " />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
