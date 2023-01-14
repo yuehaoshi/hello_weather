@@ -35,4 +35,4 @@ This is an Android app for storing location list, and query weather information 
 - Clone this repository into your local
 - Run in Android Studio
 
-> This application is part of UIUC CS427Fall Team1 project, thanks for Professor Zhang, Professor Jabbarvand, Teaching Assistants, and Team Member: Surabhi, Serena, Ankita, Manaswi, Yige, Yuan, and Zuhua.
+> This application is part of UIUC CS427Fall Team1 project, thanks for Professor Zhang, Professor Jabbarvand, Teaching Assistant Bhandari, and Team Member: Surabhi, Serena, Ankita, Manaswi, Yige, Yuan, and Zuhua.
